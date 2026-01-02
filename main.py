@@ -63,7 +63,7 @@ print("\n\n")
 csv_data.dropna(inplace=True)
 
 # Selecionar as linhas com valores não-negativos para as colunas "Dias desde a ultima Atualização" e "Classificação"
-msk = (csv_data['Dias desde a ultima Atualizacao'] >= 0) & (csv_data['Classificacao'] < 0)
+msk = (csv_data['Dias desde a ultima Atualizacao'] >= 0) & (csv_data['Classificacao'] >= 0)
 csv_data = csv_data[msk]
 
 # Verificando o número de linhas após remoção
@@ -74,3 +74,17 @@ X = csv_data.drop("Classificacao", axis=1)
 y = csv_data["Classificacao"]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+# ================================= CORRELAÇÃO ENTRE AS FEATURES ================================ #
+# Removendo a coluna "Categoria" antes de calcular a matriz de correlação
+X_train_numeric = X_train.drop("Categoria", axis=1)
+
+# Converter as colunas relevantes para tipos numéricos
+numeric_columns = ["No de Reviews", "No de Instalacoes", "Tamanho", "Preco", "Dias desde a ultima Atualizacao"]
+X_train_numeric[numeric_columns] = X_train_numeric[numeric_columns].apply(pd.to_numeric, errors="coerce")
+
+# Calcular a matriz de correlação
+correlation_matrix = X_train_numeric.corr()
+print("Matriz de Correlação")
+print(correlation_matrix)
+print("\n\n")

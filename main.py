@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 
 # Lendo o arquivo
 csv_data = pd.read_csv("reviews.csv")
@@ -67,3 +68,9 @@ csv_data = csv_data[msk]
 
 # Verificando o número de linhas após remoção
 print("Número de linhas após a remoção:", csv_data.shape[0])
+
+# ================================= REMOVENDO VALORES INVÁLIDOS ================================= #
+X = csv_data.drop("Classificacao", axis=1)
+y = csv_data["Classificacao"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)

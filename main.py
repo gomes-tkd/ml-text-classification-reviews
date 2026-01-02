@@ -37,6 +37,7 @@ plt.show()
 # Gerar estatísticas descritivas
 print("Estatísticas descritivas:")
 print(csv_data.describe())
+print("\n\n")
 
 # ================================= CHECANDO VALORES INVÁLIDOS ================================= #
 #Verificando a coluna "Classificação"
@@ -54,5 +55,15 @@ print("Valores inválidos na coluna 'Tamanho':", csv_data["Tamanho"].isnull().su
 #Verificando a coluna "Dias desde a ultima Atualização"
 csv_data["Dias desde a ultima Atualizacao"] = pd.to_numeric(csv_data["Dias desde a ultima Atualizacao"])
 print("Valores inválidos na coluna 'Dias desde a ultima Atualizacao':", csv_data["Dias desde a ultima Atualizacao"].isnull().sum())
+print("\n\n")
 
+# ================================= REMOVENDO VALORES INVÁLIDOS ================================= #
+# Removendo a linha
+csv_data.dropna(inplace=True)
 
+# Selecionar as linhas com valores não-negativos para as colunas "Dias desde a ultima Atualização" e "Classificação"
+msk = (csv_data['Dias desde a ultima Atualizacao'] >= 0) & (csv_data['Classificacao'] < 0)
+csv_data = csv_data[msk]
+
+# Verificando o número de linhas após remoção
+print("Número de linhas após a remoção:", csv_data.shape[0])

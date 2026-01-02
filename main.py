@@ -4,6 +4,8 @@ import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.impute import SimpleImputer
 
 # Lendo o arquivo
 csv_data = pd.read_csv("reviews.csv")
@@ -104,3 +106,8 @@ for i, column in enumerate(columns_to_plot):
     axes[row, col].set_ylabel("Classificação")
 
 plt.show()
+
+# ================================= PRÉ-PROCESSAMENTO DE DADOS ================================= #
+
+# ================================= TREINANDO O MODELO ========================================= #
+

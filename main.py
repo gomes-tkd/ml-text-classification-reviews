@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 # Lendo o arquivo
 csv_data = pd.read_csv("reviews.csv")
 
+# ================================== EXPLORANDO OS DADOS ========================================= #
+
 # Verificando os dados faltantes
 print("Valores faltando em cada coluna:")
 print(csv_data.isnull().sum())
@@ -35,3 +37,22 @@ plt.show()
 # Gerar estatísticas descritivas
 print("Estatísticas descritivas:")
 print(csv_data.describe())
+
+# ================================= CHECANDO VALORES INVÁLIDOS ================================= #
+#Verificando a coluna "Classificação"
+csv_data["Classificacao"] = pd.to_numeric(csv_data["Classificacao"])
+print("Valores inválidos na coluna 'Classificação':", csv_data["Classificacao"].isnull().sum())
+
+#Verificando a coluna "Preço"
+csv_data["Preco"] = pd.to_numeric(csv_data["Preco"])
+print("Valores inválidos na coluna 'Preco':", csv_data["Preco"].isnull().sum())
+
+#Verificando a coluna "Tamanho"
+csv_data["Tamanho"] = pd.to_numeric(csv_data["Tamanho"])
+print("Valores inválidos na coluna 'Tamanho':", csv_data["Tamanho"].isnull().sum())
+
+#Verificando a coluna "Dias desde a ultima Atualização"
+csv_data["Dias desde a ultima Atualizacao"] = pd.to_numeric(csv_data["Dias desde a ultima Atualizacao"])
+print("Valores inválidos na coluna 'Dias desde a ultima Atualizacao':", csv_data["Dias desde a ultima Atualizacao"].isnull().sum())
+
+

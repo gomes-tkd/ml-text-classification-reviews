@@ -88,3 +88,19 @@ correlation_matrix = X_train_numeric.corr()
 print("Matriz de Correlação")
 print(correlation_matrix)
 print("\n\n")
+
+# ================================= CRIANDO O GRÁFICO DE DISPERSÃO ================================ #
+#
+columns_to_plot = ["No de Reviews", "No de Instalacoes", "Tamanho", "Preco", "Dias desde a ultima Atualizacao"]
+fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(16, 10))
+fig.tight_layout(pad=5.0)
+
+for i, column in enumerate(columns_to_plot):
+    row = i // 3
+    col = i % 3
+    axes[row, col].scatter(X_train_numeric[column], y_train)
+    axes[row, col].set_title(f'Classificação vs {column}')
+    axes[row, col].set_xlabel(column)
+    axes[row, col].set_ylabel("Classificação")
+
+plt.show()

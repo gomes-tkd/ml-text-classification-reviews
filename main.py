@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
 
 # Lendo o arquivo
 csv_data = pd.read_csv("reviews.csv")
@@ -16,7 +17,7 @@ csv_data = pd.read_csv("reviews.csv")
 print("Valores faltando em cada coluna:")
 print(csv_data.isnull().sum())
 
-# Plotar histogramas das clonunas numéricas
+# Plotar histogramas das colunas numéricas
 numeric_columns = csv_data.select_dtypes(include=[np.number])
 num_subplots = len(numeric_columns.columns)
 num_rows = (num_subplots + 1) // 2
@@ -55,7 +56,7 @@ print("Valores inválidos na coluna 'Preco':", csv_data["Preco"].isnull().sum())
 csv_data["Tamanho"] = pd.to_numeric(csv_data["Tamanho"])
 print("Valores inválidos na coluna 'Tamanho':", csv_data["Tamanho"].isnull().sum())
 
-#Verificando a coluna "Dias desde a ultima Atualização"
+#Verificando a coluna "Dias desde a última Atualização"
 csv_data["Dias desde a ultima Atualizacao"] = pd.to_numeric(csv_data["Dias desde a ultima Atualizacao"])
 print("Valores inválidos na coluna 'Dias desde a ultima Atualizacao':", csv_data["Dias desde a ultima Atualizacao"].isnull().sum())
 print("\n\n")
@@ -64,7 +65,7 @@ print("\n\n")
 # Removendo a linha
 csv_data.dropna(inplace=True)
 
-# Selecionar as linhas com valores não-negativos para as colunas "Dias desde a ultima Atualização" e "Classificação"
+# Selecionar as linhas com valores não-negativos para as colunas "Dias desde a última Atualização" e "Classificação"
 msk = (csv_data['Dias desde a ultima Atualizacao'] >= 0) & (csv_data['Classificacao'] >= 0)
 csv_data = csv_data[msk]
 
@@ -141,3 +142,26 @@ model.fit(X_train_transformed, y_train)
 # Imprimindo os coeficientes (coef_) e o intercepto (intercept_)
 print("Coeficientes:", model.coef_)
 print("Intercepto:", model.intercept_)
+
+# ================================= AVALIANDO O MODELO ========================================= #
+# Avaliação no conjunto de dados de treinamento
+y_pred_train = model.predict(X_train_transformed)
+rmse_train = mean_squared_error(y_train, y_pred_train, squared=False)
+r2_train = r2_score(y_train, y_pred_train)
+
+print("RMSE train:", rmse_train)
+print("R2 train:", r2_train)
+
+# Transformação dos dados de teste
+tf_num_test = imp.transform(X_test[num_col])
+tf_num_test = scaler.transform(tf_num_test)
+tf_cat_test = ohe.transform(X_test[cat_col])
+X_test_transformed = np.concatenate((tf_num_test, tf_cat_test), axis=1)
+
+# Avaliação no conjunto de dados de teste
+y_pred_test = model.predict(X_test_transformed)
+rmse_test = mean_squared_error(y_test, y_pred_test, squared=False)
+r2_test = r2_score(y_test, y_pred_test)
+
+print("RMSE test:", rmse_test)
+print("R2 test:", r2_test)

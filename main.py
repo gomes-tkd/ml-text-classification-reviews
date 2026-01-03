@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LinearRegression
@@ -217,4 +217,18 @@ print("R2 test:", r2_test)
 print("\n\n")
 
 # ======================= VALIDAÇÃO CRUZADA USANDO PIPELINE ===================================== #
+# Validação Cruzada com RMSE negativo como critério de pontuação
+rmse_scores = cross_val_score(final_pipeline, X_train, y_train, cv=4, scoring="neg_mean_squared_error")
+rmse_scores_abs = np.abs(rmse_scores)
+
+print("Validação cruzada com RMSE:")
+print("Scores:", rmse_scores_abs)
+print("Média:", np.mean(rmse_scores_abs))
+print("\n")
+
+# Validação Cruzada com R2 como critério de pontuação
+r2_scores = cross_val_score(final_pipeline, X_train, y_train, cv=4, scoring="r2")
+print("Validação cruzada com R2:")
+print("Scores:", r2_scores)
+print("Média:", np.mean(r2_scores))
 print("\n\n")

@@ -1,11 +1,11 @@
 # Importando as libs
 import numpy as np
 import pandas as pd
-import matplotlib
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LinearRegression
 
 # Lendo o arquivo
 csv_data = pd.read_csv("reviews.csv")
@@ -34,7 +34,7 @@ for i, column in enumerate(numeric_columns.columns):
     ax.set_xlabel("Valor")
     ax.set_ylabel("Frequência")
 
-plt.tight_layout(rect=[0.0, 0.03, 1.0, 0.95])
+plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
 plt.show()
 
 # Gerar estatísticas descritivas
@@ -108,6 +108,36 @@ for i, column in enumerate(columns_to_plot):
 plt.show()
 
 # ================================= PRÉ-PROCESSAMENTO DE DADOS ================================= #
+# Declarar as variáveis num_col e cat_col
+num_col = ["No de Reviews", "No de Instalacoes", "Tamanho", "Preco", "Dias desde a ultima Atualizacao"]
+cat_col = ["Categoria"]
+
+# Substituir os valores ausentes na coluna "Tamanho
+imp = SimpleImputer(strategy="mean")
+tf_num = imp.fit_transform(X_train[num_col])
+
+# Escalando as colunas numéricas
+scaler = StandardScaler()
+tf_num = scaler.fit_transform(tf_num)
+
+# Codificar a coluna "Categoria" usando a codificação one-hot
+ohe = OneHotEncoder(sparse_output=False, drop="first")
+tf_cat = ohe.fit_transform(X_train[cat_col])
+
+# Conectar os arrays tf_num e tf_cat ao longo do eixo 1
+X_train_transformed = np.concatenate((tf_num, tf_cat), axis=1)
+
+# Verificar o resultado imprimindo o primeiro exemplo
+print("Exemplo transformado:")
+print(X_train_transformed)
 
 # ================================= TREINANDO O MODELO ========================================= #
+# Instanciando o objeto LinearRegression
+model = LinearRegression()
 
+# Treinando o modelo usando os dados de treinamento transformados
+model.fit(X_train_transformed, y_train)
+
+# Imprimindo os coeficientes (coef_) e o intercepto (intercept_)
+print("Coeficientes:", model.coef_)
+print("Intercepto:", model.intercept_)

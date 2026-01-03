@@ -7,6 +7,8 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
 
 # Lendo o arquivo
 csv_data = pd.read_csv("reviews.csv")
@@ -107,6 +109,7 @@ for i, column in enumerate(columns_to_plot):
     axes[row, col].set_ylabel("Classificação")
 
 plt.show()
+print("\n\n")
 
 # ================================= PRÉ-PROCESSAMENTO DE DADOS ================================= #
 # Declarar as variáveis num_col e cat_col
@@ -131,6 +134,7 @@ X_train_transformed = np.concatenate((tf_num, tf_cat), axis=1)
 # Verificar o resultado imprimindo o primeiro exemplo
 print("Exemplo transformado:")
 print(X_train_transformed)
+print("\n\n")
 
 # ================================= TREINANDO O MODELO ========================================= #
 # Instanciando o objeto LinearRegression
@@ -142,16 +146,17 @@ model.fit(X_train_transformed, y_train)
 # Imprimindo os coeficientes (coef_) e o intercepto (intercept_)
 print("Coeficientes:", model.coef_)
 print("Intercepto:", model.intercept_)
+print("\n\n")
 
 # ================================= AVALIANDO O MODELO ========================================= #
 # Avaliação no conjunto de dados de treinamento
 y_pred_train = model.predict(X_train_transformed)
-rmse_train = mean_squared_error(y_train, y_pred_train, squared=False)
+rmse_train = mean_squared_error(y_train, y_pred_train)
 r2_train = r2_score(y_train, y_pred_train)
 
 print("RMSE train:", rmse_train)
 print("R2 train:", r2_train)
-
+print("\n")
 # Transformação dos dados de teste
 tf_num_test = imp.transform(X_test[num_col])
 tf_num_test = scaler.transform(tf_num_test)
@@ -160,8 +165,56 @@ X_test_transformed = np.concatenate((tf_num_test, tf_cat_test), axis=1)
 
 # Avaliação no conjunto de dados de teste
 y_pred_test = model.predict(X_test_transformed)
-rmse_test = mean_squared_error(y_test, y_pred_test, squared=False)
+rmse_test = mean_squared_error(y_test, y_pred_test)
 r2_test = r2_score(y_test, y_pred_test)
 
 print("RMSE test:", rmse_test)
 print("R2 test:", r2_test)
+print("\n\n")
+
+# ======================= USANDO COLUMN TRANSFORMER E PIPELINE ================================== #
+# Criação do pipeline de pré-processamento para as colunas numéricas
+num_preprocessing = Pipeline([
+    ("imputer", SimpleImputer(strategy="mean")),
+    ("scaler", StandardScaler()),
+])
+
+# Criação do ColumnTransformer
+full_processing = ColumnTransformer([
+    ("num", num_preprocessing, num_col),
+    ("cat", OneHotEncoder(sparse_output=False, drop="first"), cat_col),
+])
+
+# Criação do pipeline final
+final_pipeline = Pipeline([
+    ("preprocessing", full_processing),
+    ("model", LinearRegression()),
+])
+print("\n\n")
+
+# ======================= USANDO PIPELINE PARA TREINAR O MODELO ================================= #
+# Treinando o modelo usando o pipeline final
+final_pipeline.fit(X_train, y_train)
+
+# ======================= AVALIANDO O MODELO COM PIPELINE ======================================= #
+# Avaliação do modelo no conjunto de treinamento
+y_pred_train = final_pipeline.predict(X_train)
+rmse_train = np.sqrt(mean_squared_error(y_train, y_pred_train))
+r2_train = r2_score(y_train, y_pred_train)
+
+print("Avaliação no conjunto de treinamento:")
+print("RMSE train:", rmse_train)
+print("R2 train:", r2_train)
+print("\n")
+# Avaliação do modelo no conjunto de teste
+y_pred_test = final_pipeline.predict(X_test)
+rmse_test = np.sqrt(mean_squared_error(y_test, y_pred_test))
+r2_test = r2_score(y_test, y_pred_test)
+
+print("Avaliação no conjunto de teste:")
+print("RMSE test:", rmse_test)
+print("R2 test:", r2_test)
+print("\n\n")
+
+# ======================= VALIDAÇÃO CRUZADA USANDO PIPELINE ===================================== #
+print("\n\n")
